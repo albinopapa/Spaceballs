@@ -46,6 +46,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	Ship ship;
+	Bullet bullet;
 	static constexpr int nStars = 100;
 	Star star[nStars];
 	int starX = 300;
