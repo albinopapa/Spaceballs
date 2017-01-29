@@ -1,6 +1,6 @@
 #include "Star.h"
 
-void Star::Spawn( int X, int Y, int Size )
+void Star::Spawn(int X, int Y, int Size)
 {
 	x = X;
 	y = Y;
@@ -10,7 +10,7 @@ void Star::Spawn( int X, int Y, int Size )
 void Star::Update()
 {
 	y++;
-	if( y + size >= Graphics::ScreenHeight )
+	if (y + size >= Graphics::ScreenHeight)
 	{
 		y = 3;
 	}

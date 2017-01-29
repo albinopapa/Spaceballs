@@ -26,6 +26,7 @@
 #include "Ship.h"
 #include "Star.h"
 #include <random>
+#include "Bullet.h"
 
 class Game
 {
@@ -39,6 +40,8 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void UpdateStars();
+	void DrawStars();
 	/********************************/
 private:
 	MainWindow& wnd;

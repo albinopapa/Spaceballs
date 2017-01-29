@@ -4,13 +4,14 @@
 class Bullet
 {
 public:
-	void Spawn( int X, int Y );
+	void Spawn(int X, int Y);
 	void Update();
-	bool HasSpawned()const;
-	void Draw( Graphics& gfx );
+	bool HasSpawned() const;
+	void Draw(Graphics & gfx);
 private:
 	int bulletSize = 10;
-	int x, y;
+	int x;
+	int y;
 	int vy;
 	bool hasSpawned = false;
 };
