@@ -24,7 +24,8 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	mainSong(L"actionnd.wav")
 {
 	std::mt19937 rng;
 	std::uniform_int_distribution<int> xDist(0, 790);
@@ -37,6 +38,7 @@ Game::Game( MainWindow& wnd )
 	{
 		starB[i].Spawn(xDist(rng), yDist(rng), 6);
 	}
+	mainSong.Play(1.0F, 0.5F);
 }
 
 void Game::Go()
@@ -46,11 +48,15 @@ void Game::Go()
 	ComposeFrame();
 	gfx.EndFrame();
 }
-
+/*
+I want to keep UpdateModel nice and neat. 
+Anything that has to do with the ship should be part of ship.Update
+*/
 void Game::UpdateModel()
 {
 	ship.Update(wnd);
 	UpdateStars();
+	mineM.Update(ship);
 }
 
 void Game::UpdateStars()
@@ -78,8 +84,11 @@ void Game::DrawStars()
 	}
 }
 
+// same thing as in updatemodel goes for composeframe
 void Game::ComposeFrame()
 {
+	
 	DrawStars();
 	ship.Draw(gfx);
+	mineM.Draw(gfx);
 }
