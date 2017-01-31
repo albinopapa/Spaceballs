@@ -1,4 +1,6 @@
+#include "MainWindow.h"
 #include "Mine.h"
+#include "Ship.h"
 
 //detects if the mine collides with a ship, passing in reference to the ship so mine knows its location
 //returns a bool, this function will get called in mines update function
@@ -8,7 +10,7 @@ bool Mine::DetectCollision(Ship& ship)
 	const float mBottom = y + height;
 	const float sRight = ship.GetWidth() + ship.GetX();
 	const float sBottom = ship.GetHeight() + ship.GetY();
-
+	
 	return
 		mRight >= ship.GetX() &&
 		x <= sRight &&
@@ -41,6 +43,12 @@ void Mine::Update(Ship& ship, float dt)
 				isDamaged = true;
 			}
 
+		}
+
+	
+		if (GotShot(ship, ship.GetnBullets()))
+		{
+			ship.hitTarget = true;
 		}
 	}
 }
@@ -7820,6 +7828,28 @@ bool Mine::isActive()
 {
 	return
 		explosionCounter < explosionEnd;
+}
+
+bool Mine::GotShot(Ship & ship, int nBullets)
+{
+	for (int i = 0; i < nBullets; i++)
+	{
+		const float bRight = ship.GetBullets()[i].GetX() + ship.GetBullets()[i].GetBulletSize();
+		const float bLeft = ship.GetBullets()[i].GetX() - ship.GetBullets()[i].GetBulletSize();
+		const float bBottom = ship.GetBullets()[i].GetY() + ship.GetBullets()[i].GetBulletSize();
+		const float bTop = ship.GetBullets()[i].GetY() - ship.GetBullets()[i].GetBulletSize();
+		const float mRight = x + width;
+		const float mBottom = y + height;
+
+		if (mRight >= bLeft &&
+			x <= bRight &&
+			mBottom >= bTop &&
+			y <= bBottom)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 	
 
