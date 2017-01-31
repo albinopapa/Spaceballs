@@ -28,15 +28,15 @@ Game::Game( MainWindow& wnd )
 	mainSong(L"actionnd.wav")
 {
 	std::mt19937 rng;
-	std::uniform_int_distribution<int> xDist(0, 790);
-	std::uniform_int_distribution<int> yDist(0, 590);
+	std::uniform_real_distribution<float> xDist(0.0f, 790.0f);
+	std::uniform_real_distribution<float> yDist(0.0f, 590.0f);
 	for (int i = 0; i < nStars; i++)
 	{
-		star[i].Spawn(xDist(rng), yDist(rng), 3);
+		star[i].Spawn(xDist(rng), yDist(rng), 3.0f);
 	}
 	for (int i = 0; i < nBigStars; i++)
 	{
-		starB[i].Spawn(xDist(rng), yDist(rng), 6);
+		starB[i].Spawn(xDist(rng), yDist(rng), 6.0f);
 	}
 	mainSong.Play(1.0F, 0.5F);
 }
@@ -54,21 +54,24 @@ Anything that has to do with the ship should be part of ship.Update
 */
 void Game::UpdateModel()
 {
-	ship.Update(wnd);
-	UpdateStars();
-	mineM.Update(ship);
+	const float dt = ft.Mark();
+
+	ship.Update(wnd, dt);
+	UpdateStars(dt);
+	mineM.Update(ship, dt);
+	eBoostM.Update(ship, dt);
 }
 
-void Game::UpdateStars()
+void Game::UpdateStars(float dt)
 {
 	for (int i = 0; i < nStars; i++)
 	{
-		star[i].Update();
+		star[i].Update(dt);
 	}
 
 	for (int i = 0; i < nBigStars; i++)
 	{
-		starB[i].Update();
+		starB[i].Update(dt);
 	}
 }
 
@@ -87,8 +90,8 @@ void Game::DrawStars()
 // same thing as in updatemodel goes for composeframe
 void Game::ComposeFrame()
 {
-	
 	DrawStars();
 	ship.Draw(gfx);
-	mineM.Draw(gfx);
+	mineM.Draw(gfx, ship);
+	eBoostM.Draw(gfx, ship);
 }

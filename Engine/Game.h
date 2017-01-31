@@ -29,6 +29,8 @@
 #include "Bullet.h"
 #include "Sound.h"
 #include "MineManager.h"
+#include "FrameTimer.h"
+#include "EnergyBoostManager.h"
 
 class Game
 {
@@ -42,7 +44,7 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-	void UpdateStars();
+	void UpdateStars(float dt);
 	void DrawStars();
 	/********************************/
 private:
@@ -54,11 +56,11 @@ private:
 	Bullet bullet;
 	static constexpr int nStars = 100;
 	Star star[nStars];
-	int starX = 300;
-	int starY = 2;
 	static constexpr int nBigStars = 20;
 	Star starB[nBigStars];
 	Sound mainSong;
 	MineManager mineM;
+	FrameTimer ft;
+	EnergyBoostManager eBoostM;
 	/********************************/
 };
