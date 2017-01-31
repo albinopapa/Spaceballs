@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "Ship.h"
+#include "BulletManager.h"
 
 // draws the ship and draws spawned bullets and anything that has to do with ship
 void Ship::Draw(Graphics& gfx) 
@@ -3745,31 +3746,23 @@ void Ship::Draw(Graphics& gfx)
 		gfx.PutPixel(x_int+ 93, y_int+ 94, 87, 8, 87);
 		gfx.PutPixel(x_int+ 93, y_int+ 95, 73, 22, 73);
 		gfx.PutPixel(x_int+ 93, y_int+ 96, 197, 31, 197);
-
-		for (int i = 0; i < nBullets; i++)
-		{
-			if (bullet[i].HasSpawned())
-			{
-				bullet[i].Draw(gfx);
-			}
-		}
-
+		
 		health.Draw(gfx);
 	}
 	
 }
 
-void Ship::FireBullet(float dt)
+RectF Ship::GetCollisionRect() const
+{
+	return RectF( x, y, width, height );
+}
+
+void Ship::FireBullet(BulletManager &bm)
 {
 	if (shotsFired == false)
 	{
-		bullet[bulletCounter].Spawn(x + canonPos, y, dt);
+		bm.SpawnBullet( x + canonPos, y );
 		gun.Play(0.5F, 0.5F);
-		++bulletCounter;
-		if (bulletCounter > 2)
-		{
-			bulletCounter = 0;
-		}
 		shotsFired = true;
 	}
 }
@@ -3797,7 +3790,7 @@ void Ship::ClampScreen()
 }
 
 // gets the player input
-void Ship::PlayerInput(MainWindow & wnd, float dt)
+void Ship::PlayerInput(MainWindow & wnd, float dt, BulletManager& bm )
 {
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
@@ -3817,7 +3810,7 @@ void Ship::PlayerInput(MainWindow & wnd, float dt)
 	}
 	if (wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
-		FireBullet(dt);
+		FireBullet( bm );
 	}
 	else
 	{
@@ -3841,59 +3834,34 @@ bool Ship::HasHealth() const
 	return health.HasHealth();
 }
 
-float Ship::GetX() 
+float Ship::GetX()const
 {
 	return x;
 }
 
-float Ship::GetY() 
+float Ship::GetY()const
 {
 	return y;
 }
 
-float Ship::GetWidth() 
+float Ship::GetWidth()const
 {
 	return width;
 }
 
-float Ship::GetHeight() 
+float Ship::GetHeight()const
 {
 	return height;
 }
 
-Bullet* Ship::GetBullets()
-{
-	return bullet;
-}
-
-int Ship::GetnBullets()
-{
-	return nBullets;
-}
-
 // updates should be neat. we use player input function
 // this way we can easily shut off player input if there's a cutscene etc
-void Ship::Update(MainWindow & wnd, float dt, MineManager& mm)
+void Ship::Update(MainWindow & wnd, float dt, BulletManager& bm )
 {
 	if (HasHealth())
 	{
-		PlayerInput(wnd, dt);
-
-		for (int i = 0; i < nBullets; i++)
-		{
-			if (hitTarget)
-			{
- 				bullet[i].hasSpawned = false;
-				hitTarget = false;
-			}
-			if (bullet[i].HasSpawned())
-			{
-				bullet[i].Update(dt);
-			}
-		}
-
+		PlayerInput(wnd, dt, bm);
 		ClampScreen();
-	}
-	
+	}	
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "MainWindow.h"
+
 #include "Mine.h"
 #include <random>
 
@@ -10,7 +10,7 @@ public:
 	MineManager();
 	void Update(Ship& ship, float dt);
 	void Draw(Graphics & gfx, Ship& ship);
-	bool WasHit();
+	void CheckCollision( class BulletManager &Bullets, Ship& _Ship );
 
 private:
 	static constexpr int nMinesMax = 130;

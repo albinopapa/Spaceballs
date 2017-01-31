@@ -2,28 +2,12 @@
 #include "Mine.h"
 #include "Ship.h"
 
-//detects if the mine collides with a ship, passing in reference to the ship so mine knows its location
-//returns a bool, this function will get called in mines update function
-bool Mine::DetectCollision(Ship& ship)
-{
-	const float mRight = x + width;
-	const float mBottom = y + height;
-	const float sRight = ship.GetWidth() + ship.GetX();
-	const float sBottom = ship.GetHeight() + ship.GetY();
-	
-	return
-		mRight >= ship.GetX() &&
-		x <= sRight &&
-		mBottom >= ship.GetY() &&
-		y <= sBottom;
-}
-
 //updates the mine, takes ship as argument so it can call the detectcollision function
-void Mine::Update(Ship& ship, float dt)
+void Mine::Update( Ship& ship, float dt )
 {
-	if (ship.HasHealth()) //updates mines if ship has health
+	if( ship.HasHealth() ) //updates mines if ship has health
 	{
-		if (!isDetonated)
+		if( !isDetonated )
 		{
 			y += vy * dt;
 		}
@@ -32,23 +16,6 @@ void Mine::Update(Ship& ship, float dt)
 		else
 		{
 			explosionCounter++;
-		}
-		if (DetectCollision(ship))
-		{
-			isDetonated = true;
-			if (!isDamaged)      //if not isdamaged then the ship will take damage and isdamaage becomes true
-			{                      // this way the damanage is dealt only one time
-				ship.Damage(damage);
-				explosion.Play(0.8F, 1.0F);
-				isDamaged = true;
-			}
-
-		}
-
-	
-		if (GotShot(ship, ship.GetnBullets()))
-		{
-			ship.hitTarget = true;
 		}
 	}
 }
@@ -7813,8 +7780,7 @@ void Mine::Draw(Graphics& gfx, Ship& ship)
 			gfx.PutPixelClipped(x_int+ 99, y_int+ 70, 247, 65, 255);
 
 		}
-	}
-	
+	}	
 }
 
 //rng will determine the mines x pos, gets set in mine manager
@@ -7830,26 +7796,30 @@ bool Mine::isActive()
 		explosionCounter < explosionEnd;
 }
 
-bool Mine::GotShot(Ship & ship, int nBullets)
+bool Mine::IsAlive()
 {
-	for (int i = 0; i < nBullets; i++)
-	{
-		const float bRight = ship.GetBullets()[i].GetX() + ship.GetBullets()[i].GetBulletSize();
-		const float bLeft = ship.GetBullets()[i].GetX() - ship.GetBullets()[i].GetBulletSize();
-		const float bBottom = ship.GetBullets()[i].GetY() + ship.GetBullets()[i].GetBulletSize();
-		const float bTop = ship.GetBullets()[i].GetY() - ship.GetBullets()[i].GetBulletSize();
-		const float mRight = x + width;
-		const float mBottom = y + height;
+	return !isDamaged;
+}
 
-		if (mRight >= bLeft &&
-			x <= bRight &&
-			mBottom >= bTop &&
-			y <= bBottom)
-		{
-			return true;
-		}
+void Mine::Detonate()
+{
+	isDetonated = true;
+	if( !isDamaged )      //if not isdamaged then the ship will take damage and isdamaage becomes true
+	{                      // this way the damanage is dealt only one time
+		explosion.Play( 0.8F, 1.0F );
+		isDamaged = true;
+		
 	}
-	return false;
+}
+
+RectF Mine::GetCollisionRect() const
+{
+	return RectF( x, y, width, height );
+}
+
+int Mine::GetDamage() const
+{
+	return damage;
 }
 	
 

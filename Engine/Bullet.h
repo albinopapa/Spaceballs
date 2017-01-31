@@ -1,18 +1,21 @@
 #pragma once
+
 #include "Graphics.h"
+#include "RectF.h"
 
 class Bullet
 {
 public:
-	void Spawn(float X, float Y, float dt);
+	void Spawn( float X, float Y );
 	void Update(float dt);
 	bool HasSpawned() const;
 	void Draw(Graphics & gfx);
-	float GetX();
-	float GetY();
-	int GetBulletSize();
-	bool hasSpawned = false;
+	float GetX()const;
+	float GetY()const;
+	int GetBulletSize()const;
+	RectF GetCollisionRect()const;
 private:
+	bool hasSpawned = false;
 	int bulletSize = 10;
 	float x;
 	float y;

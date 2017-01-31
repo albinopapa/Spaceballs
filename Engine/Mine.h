@@ -1,18 +1,20 @@
 #pragma once
 #include "Graphics.h"
-#include "MainWindow.h"
 #include "Health.h"
+#include "RectF.h"
 #include "Sound.h"
 
 class Mine
 {
 public:
-	bool DetectCollision(class Ship& ship);
 	void Update(class Ship& ship, float dt);
 	void Draw(Graphics& gfx,class Ship& ship);
 	void SetPos(float X);
 	bool isActive();
-	bool GotShot(class Ship& ship, int nBullets);
+	bool IsAlive();
+	void Detonate();
+	RectF GetCollisionRect()const;
+	int GetDamage()const;
 private:
 	float x = 0.0f;
 	float y = -50.0f;

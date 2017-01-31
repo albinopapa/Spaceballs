@@ -26,7 +26,7 @@
 #include "Ship.h"
 #include "Star.h"
 #include <random>
-#include "Bullet.h"
+#include "BulletManager.h"
 #include "Sound.h"
 #include "MineManager.h"
 #include "FrameTimer.h"
@@ -52,8 +52,8 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	Ship ship;
-	Bullet bullet;
+	BulletManager bulletM;
+	Ship ship;	
 	static constexpr int nStars = 100;
 	Star star[nStars];
 	static constexpr int nBigStars = 20;

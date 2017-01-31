@@ -4,7 +4,7 @@
 
 //Spawn gets x and y positions which are the position of the canon
 //it gets called from ships firebullet function
-void Bullet::Spawn(float X, float Y, float dt) 
+void Bullet::Spawn( float X, float Y )
 {
 	if (!hasSpawned) //if a bullet has NOT been spawned it sets the bullets pos to the canon pos
 	{
@@ -32,20 +32,25 @@ bool Bullet::HasSpawned() const
 
 void Bullet::Draw(Graphics& gfx)
 {
-	gfx.DrawCircle(int (x), int(y), bulletSize, Colors::Magenta);
+	gfx.DrawCircle( int( x ), int( y ), bulletSize, Colors::Magenta );
 }
 
-float Bullet::GetX()
+float Bullet::GetX()const
 {
 	return x;
 }
 
-float Bullet::GetY()
+float Bullet::GetY()const
 {
 	return y;
 }
 
-int Bullet::GetBulletSize()
+int Bullet::GetBulletSize()const
 {
 	return bulletSize;
+}
+
+RectF Bullet::GetCollisionRect() const
+{
+	return RectF( x, y, bulletSize, bulletSize );
 }

@@ -137,8 +137,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="BulletManager.h" />
     <ClInclude Include="ChiliException.h" />
     <ClInclude Include="ChiliWin.h" />
+    <ClInclude Include="CollisionHandler.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="Enemy.h" />
@@ -153,6 +155,7 @@
     <ClInclude Include="Mine.h" />
     <ClInclude Include="MineManager.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="RectF.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shield.h" />
     <ClInclude Include="ShieldManager.h" />
@@ -164,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="BulletManager.cpp" />
+    <ClCompile Include="CollisionHandler.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="EnergyBoost.cpp" />
     <ClCompile Include="EnergyBoostManager.cpp" />
@@ -177,6 +182,7 @@
     <ClCompile Include="Mine.cpp" />
     <ClCompile Include="MineManager.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="RectF.cpp" />
     <ClCompile Include="Shield.cpp" />
     <ClCompile Include="ShieldMeter.cpp" />
     <ClCompile Include="Ship.cpp" />

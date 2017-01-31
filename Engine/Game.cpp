@@ -56,10 +56,13 @@ void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
 
-	ship.Update(wnd, dt, mineM);
+	ship.Update(wnd, dt, bulletM);
+	bulletM.UpdateBullets( dt );
 	UpdateStars(dt);
 	mineM.Update(ship, dt);
 	eBoostM.Update(ship, dt);
+
+	mineM.CheckCollision( bulletM, ship );
 }
 
 void Game::UpdateStars(float dt)
@@ -92,6 +95,7 @@ void Game::ComposeFrame()
 {
 	DrawStars();
 	ship.Draw(gfx);
+	bulletM.DrawBullets( gfx );
 	mineM.Draw(gfx, ship);
 	eBoostM.Draw(gfx, ship);
 }
