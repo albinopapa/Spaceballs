@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "Ship.h"
-#include "BulletManager.h"
 
 // draws the ship and draws spawned bullets and anything that has to do with ship
 void Ship::Draw(Graphics& gfx) 
@@ -3746,24 +3745,32 @@ void Ship::Draw(Graphics& gfx)
 		gfx.PutPixel(x_int+ 93, y_int+ 94, 87, 8, 87);
 		gfx.PutPixel(x_int+ 93, y_int+ 95, 73, 22, 73);
 		gfx.PutPixel(x_int+ 93, y_int+ 96, 197, 31, 197);
-		
+
+		for (int i = 0; i < nBullets; i++)
+		{
+			if (bullet[i].HasSpawned())
+			{
+				bullet[i].Draw(gfx);
+			}
+		}
 		health.Draw(gfx);
 	}
-	
 }
 
-RectF Ship::GetCollisionRect() const
-{
-	return RectF( x, y, width, height );
-}
-
-void Ship::FireBullet(BulletManager &bm)
+void Ship::FireBullet(float dt)
 {
 	if (shotsFired == false)
 	{
-		bm.SpawnBullet( x + canonPos, y );
-		gun.Play(0.5F, 0.5F);
-		shotsFired = true;
+		for (int i = 0; i < nBullets; ++i)
+		{
+			if (!bullet[i].HasSpawned())
+			{
+				bullet[i].Spawn(x + canonPos, y, dt);
+				gun.Play(0.5F, 0.5F);
+				shotsFired = true;
+				break;
+			}
+		}
 	}
 }
 
@@ -3790,7 +3797,7 @@ void Ship::ClampScreen()
 }
 
 // gets the player input
-void Ship::PlayerInput(MainWindow & wnd, float dt, BulletManager& bm )
+void Ship::PlayerInput(MainWindow & wnd, float dt)
 {
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
@@ -3810,7 +3817,7 @@ void Ship::PlayerInput(MainWindow & wnd, float dt, BulletManager& bm )
 	}
 	if (wnd.kbd.KeyIsPressed(VK_SPACE))
 	{
-		FireBullet( bm );
+		FireBullet(dt);
 	}
 	else
 	{
@@ -3834,34 +3841,60 @@ bool Ship::HasHealth() const
 	return health.HasHealth();
 }
 
-float Ship::GetX()const
+float Ship::GetX() 
 {
 	return x;
 }
 
-float Ship::GetY()const
+float Ship::GetY() 
 {
 	return y;
 }
 
-float Ship::GetWidth()const
+float Ship::GetWidth() 
 {
 	return width;
 }
 
-float Ship::GetHeight()const
+float Ship::GetHeight() 
 {
 	return height;
 }
 
+Bullet* Ship::GetBullets()
+{
+	return bullet;
+}
+
+int Ship::GetnBullets()
+{
+	return nBullets;
+}
+
+void Ship::SethitTarget(bool hit)
+{
+	hitTarget = hit;
+}
+
 // updates should be neat. we use player input function
 // this way we can easily shut off player input if there's a cutscene etc
-void Ship::Update(MainWindow & wnd, float dt, BulletManager& bm )
+void Ship::Update(MainWindow & wnd, float dt)
 {
+
 	if (HasHealth())
 	{
-		PlayerInput(wnd, dt, bm);
+		PlayerInput(wnd, dt);
+
+		for (int i = 0; i < nBullets; i++)
+		{
+			if (bullet[i].HasSpawned())
+			{
+				bullet[i].Update(dt);
+			}
+		}
+
 		ClampScreen();
-	}	
+	}
+	
 }
 

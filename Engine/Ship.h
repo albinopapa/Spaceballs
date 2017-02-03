@@ -1,33 +1,30 @@
 #pragma once
 #include "Graphics.h"
+#include "Bullet.h"
 #include "Sound.h"
 #include "Health.h"
-#include "RectF.h"
-
-class BulletManager;
-class MainWindow;
 
 class Ship
 {
 public:
 	void Draw(Graphics& gfx);
-	void Update( MainWindow& wnd, float dt, BulletManager& bm );
+	void FireBullet(float dt);
+	void ClampScreen();
+	void Update(MainWindow& wnd, float dt);
+	void PlayerInput(MainWindow& wnd, float dt);
 	void Restore(int restore);
 	void Damage(int damage);
-
 	bool HasHealth() const;
-	float GetX()const;
-	float GetY()const;
-	float GetWidth()const;
-	float GetHeight()const;
-	bool hitTarget = false;
+	float GetX();
+	float GetY();
+	float GetWidth();
+	float GetHeight();
+	Bullet* GetBullets();
+	int GetnBullets();
+	void SethitTarget(bool hit);
 
-	RectF GetCollisionRect()const;
 private:
-	void FireBullet( BulletManager &bm );
-	void ClampScreen();
-	void PlayerInput( MainWindow& wnd, float dt, BulletManager& bm );
-private:
+	bool hitTarget = false;
 	float x = 300.0f;
 	float y = 300.0f;
 	float width = 100.0f;
@@ -35,6 +32,9 @@ private:
 	float canonPos = 50.0f;
 	float vx = 6.0f * 60.0f;
 	float vy = 6.0f * 60.0f;
+	static constexpr int nBullets = 3;
+	int bulletCounter = 0;
+	Bullet bullet[nBullets];
 	bool shotsFired = false;
 	Sound gun = L"shitgun.wav";
 	Health health;

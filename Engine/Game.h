@@ -31,6 +31,8 @@
 #include "MineManager.h"
 #include "FrameTimer.h"
 #include "EnergyBoostManager.h"
+#include "ShieldManager.h"
+#include "TitleScreen.h"
 
 class Game
 {
@@ -46,6 +48,7 @@ private:
 	/*  User Functions              */
 	void UpdateStars(float dt);
 	void DrawStars();
+	void PlayerInput();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -59,8 +62,15 @@ private:
 	static constexpr int nBigStars = 20;
 	Star starB[nBigStars];
 	Sound mainSong;
+	Sound shieldon = L"shieldon.wav";
+	Sound shieldoff = L"shieldoff.wav";
+	Sound titleSong = L"War.wav";
 	MineManager mineM;
 	FrameTimer ft;
 	EnergyBoostManager eBoostM;
+	ShieldManager shieldM;
+	bool gameIsStarted = false;
+	TitleScreen title;
+	bool songIsPlayed = false;
 	/********************************/
 };

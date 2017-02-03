@@ -93,7 +93,10 @@
     <ClInclude Include="ShieldManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShieldMeter.h">
+    <ClInclude Include="SmallShield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BulletManager.h">
@@ -161,7 +164,13 @@
     <ClCompile Include="Shield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShieldMeter.cpp">
+    <ClCompile Include="ShieldManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmallShield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BulletManager.cpp">
@@ -203,6 +212,15 @@
       <Filter>Media</Filter>
     </Media>
     <Media Include="explo.wav">
+      <Filter>Media</Filter>
+    </Media>
+    <Media Include="boost.wav">
+      <Filter>Media</Filter>
+    </Media>
+    <Media Include="shieldon.wav">
+      <Filter>Media</Filter>
+    </Media>
+    <Media Include="War.wav">
       <Filter>Media</Filter>
     </Media>
   </ItemGroup>

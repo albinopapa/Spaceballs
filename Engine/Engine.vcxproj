@@ -159,11 +159,12 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shield.h" />
     <ClInclude Include="ShieldManager.h" />
-    <ClInclude Include="ShieldMeter.h" />
     <ClInclude Include="Ship.h" />
+    <ClInclude Include="SmallShield.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="Star.h" />
+    <ClInclude Include="TitleScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bullet.cpp" />
@@ -184,10 +185,12 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="RectF.cpp" />
     <ClCompile Include="Shield.cpp" />
-    <ClCompile Include="ShieldMeter.cpp" />
+    <ClCompile Include="ShieldManager.cpp" />
     <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="SmallShield.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Star.cpp" />
+    <ClCompile Include="TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="FramebufferPS.hlsl">
@@ -259,9 +262,12 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="actionnd.wav" />
+    <Media Include="boost.wav" />
     <Media Include="explo.wav" />
+    <Media Include="shieldon.wav" />
     <Media Include="shitgun.wav" />
     <Media Include="shitgun2.wav" />
+    <Media Include="War.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
