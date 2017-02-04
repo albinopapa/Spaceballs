@@ -318,11 +318,6 @@ void Graphics::PutPixel( int x,int y,Color c )
 
 void Graphics::DrawCircle(int x, int y, int r, Color c)
 {
-	DrawCircleClipped( x, y, r, c );
-}
-
-void Graphics::DrawCircleClipped( int x, int y, int r, Color c )
-{
 	const int r_sqr = r * r;
 	if( x - r < 0 || x + r >= ScreenWidth ||
 		y - r < 0 || y + r >= ScreenHeight )
@@ -357,6 +352,42 @@ void Graphics::DrawCircleClipped( int x, int y, int r, Color c )
 	}
 }
 
+//void Graphics::DrawCircleClipped( int x, int y, int r, Color c )
+//{
+//	const int r_sqr = r * r;
+//	if( x - r < 0 || x + r >= ScreenWidth ||
+//		y - r < 0 || y + r >= ScreenHeight )
+//	{
+//		for( int x_loop = x - r; x_loop < x + r; x_loop++ )
+//		{
+//			for( int y_loop = y - r; y_loop < y + r; y_loop++ )
+//			{
+//				int x_diff = x - x_loop;
+//				int y_diff = y - y_loop;
+//				if( x_diff * x_diff + y_diff * y_diff <= r_sqr )
+//				{
+//					PutPixelClipped( x_loop, y_loop, c );
+//				}
+//			}
+//		}
+//	}
+//	else
+//	{
+//		for( int x_loop = x - r; x_loop < x + r; x_loop++ )
+//		{
+//			for( int y_loop = y - r; y_loop < y + r; y_loop++ )
+//			{
+//				int x_diff = x - x_loop;
+//				int y_diff = y - y_loop;
+//				if( x_diff * x_diff + y_diff * y_diff <= r_sqr )
+//				{
+//					PutPixel( x_loop, y_loop, c );
+//				}
+//			}
+//		}
+//	}
+//}
+
 void Graphics::DrawAnnulus(int x, int y, int radi, int r2, Color c)
 {
 	const int r_sqr = radi * radi;
@@ -384,6 +415,31 @@ void Graphics::DrawSquare(int x, int y, int width, int height, Color c)
 		{
 			PutPixel(i, j, c);
 		}
+	}
+}
+
+void Graphics::DrawLasewr( int X, int Y, int Width, int Height, Color C )
+{
+	int x = 200;
+	int y = 100;
+	DrawSquare( x, y, 10, 200, Colors::White );
+	int g = 55;
+	for( int i = x - 21; i < x; i++ )
+	{
+		for( int j = y; j < y + 200; j++ )
+		{
+			PutPixel( i, j, 0, g, 0 );
+		}
+		g += 10;
+	}
+	g = 255;
+	for( int i = x + 10; i < x + 30; i++ )
+	{
+		for( int j = y; j < y + 200; j++ )
+		{
+			PutPixel( i, j, 0, g, 0 );
+		}
+		g -= 10;
 	}
 }
 

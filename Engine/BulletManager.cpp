@@ -9,7 +9,7 @@ BulletManager::~BulletManager()
 
 void BulletManager::SpawnBullet( float X, float Y )
 {
-	bullet[ bulletCounter ].Spawn( X, Y );
+	bullet[ bulletCounter ].Spawn( X, Y, .016f );
 	++bulletCounter;
 	if( bulletCounter > 2 )
 	{
