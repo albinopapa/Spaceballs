@@ -246,3 +246,5 @@ ModelManifest.xml
 
 # Precompiled Shader Header Files
 *.shh
+/Engine/Image/TitleScreen.bit
+/Engine/abc.bit
