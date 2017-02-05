@@ -131,6 +131,6 @@ void Game::ComposeFrame()
 		mineM.Draw(gfx, ship);
 		eBoostM.Draw(gfx, ship);
 
-		gfx.DrawLasewr( 200, 100, 50, 200, Colors::Green );
+		//gfx.DrawLasewr( 200, 100, 50, 200, Colors::Green );
 	}
 }
