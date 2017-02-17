@@ -16,7 +16,7 @@ int BulletManager::GetNumBullets() const
 	return nBullets;
 }
 
-void BulletManager::FireBullet(float X, float Y, float Dt)
+void BulletManager::FireBullet(Vec2& canonPos, float Dt)
 {
 	if (shotsFired == false)
 	{
@@ -25,7 +25,7 @@ void BulletManager::FireBullet(float X, float Y, float Dt)
 			auto& bullet = bullets[i];
 			if (!bullet.HasSpawned())
 			{
-				bullet = Bullet(X, Y);
+				bullet = Bullet(canonPos);
 				gun.Play(0.5f, 0.5f);
 				shotsFired = true;
 				break;
@@ -55,6 +55,14 @@ void BulletManager::DrawBullets(Graphics& Gfx)
 		{
 			bullet.Draw(Gfx);
 		}
+	}
+}
+
+void BulletManager::Reset()
+{
+	for (int i = 0; i < nBullets; ++i)
+	{
+		bullets[i].Reset();
 	}
 }
 

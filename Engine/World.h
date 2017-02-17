@@ -14,6 +14,7 @@
 #include "Star.h"
 #include "TitleScreen.h"
 #include "ObstacleManager.h"
+#include "BlackHoleManager.h"
 
 class World
 {
@@ -56,11 +57,20 @@ private:
 
 	Surface shipSurface = Surface::FromFile(L"shippit.png");
 	Surface exhaustSurface = Surface::FromFile(L"shipper.png");
+	Surface redSurface = Surface::FromFile(L"shipred.png");
+	Surface rektSurface = Surface::FromFile(L"enginerekt.png");
+	AnimationFrames shipRekt;
 	BulletManager bulletM;
 	Ship ship;
 
 	Surface obstacleSurface = Surface::FromFile(L"obstacle.png");
 	ObstacleManager obstacleM;
+
+	Surface gameOverSurface = Surface::FromFile(L"gameover.png");
+	Sound gameOverSong = L"64.wav";
+
+	AnimationFrames bHoleAnim;
+	BlackHoleManager blackholeM;
 
 	static constexpr int nStars = 100;
 	Star star[nStars];
@@ -71,4 +81,6 @@ private:
 	bool songIsPlayed = false;
 	static constexpr int nScores = 10;
 	HighScore scores[nScores];
+	Keyboard::Event event;
+
 };

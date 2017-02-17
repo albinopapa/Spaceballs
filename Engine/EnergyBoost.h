@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "Ship.h"
 #include "Sound.h"
+#include "Vec2.h"
 
 class EnergyBoost
 {
@@ -12,10 +13,11 @@ public:
 	void Draw(Graphics& gfx);
 	RectF GetCollisionRect() const;
 	void HandleCollision(Ship& ship);
+	void Reset();
 
 private:
-	float x = 0.0f;
-	float y = -40.0f;
+	Vec2 pos;
+	static constexpr float resetY = -40.0f;
 	static constexpr float vy = 4.0f * 60.0f;
 	bool isObtained = false;
 	bool isRestored = false;
