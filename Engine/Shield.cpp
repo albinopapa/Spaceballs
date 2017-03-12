@@ -3,6 +3,13 @@
 
 void Shield::Update(Ship& ship, Sound& shieldon, Sound& shieldoff)
 {
+	if (sState == NewState || sState == ActiveState)
+	{
+		const auto shipRect = ship.GetCollisionRect();
+		pos.x = shipRect.GetCenterX();
+		pos.y = shipRect.GetCenterY();
+	}
+
 	switch(sState)
 	{
 	case NewState:
@@ -11,27 +18,18 @@ void Shield::Update(Ship& ship, Sound& shieldon, Sound& shieldoff)
 		sState = ActiveState;
 	break;
 	case ActiveState:
-		const auto shipRect = ship.GetCollisionRect();
-		pos.x = shipRect.GetCenterX();
-		pos.y = shipRect.GetCenterY();
-		meterCounter++;
-		if (meterCounter == meterDecrease)
-		{
-			meterCounter = 0;
-			meterWidth--;
-		}
-
+		
 		if (meterWidth <= 0)
 		{
 			sState = NoShield;
 			shieldoff.Play(0.9f, 1.1f);
-			shieldSize = 0;
-			holeSize = -5;
+			shieldSize = 0.0f;
+			holeSize = -5.0f;
 		}
 		if (shieldSize < radius)
 		{
-			shieldSize += 5;
-			holeSize += 5;
+			shieldSize += 0.5;
+			holeSize += 0.5;
 		}
 		break;
 	}
@@ -41,7 +39,7 @@ void Shield::Draw(Graphics& gfx) const
 {
 	if (sState == ActiveState)
 	{
-		gfx.DrawAnnulus(int(pos.x), int(pos.y), shieldSize, holeSize, c);
+		gfx.DrawAnnulus(int(pos.x), int(pos.y), int(shieldSize), int(holeSize), c);
 		DrawMeter(gfx);
 	}
 }
@@ -84,5 +82,10 @@ int Shield::GetDmg() const
 void Shield::Reset()
 {
 	sState = NoShield;
+}
+
+void Shield::HandleCollision(int damage)
+{
+	meterWidth -= damage;
 }
 

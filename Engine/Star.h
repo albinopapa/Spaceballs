@@ -11,9 +11,11 @@ public:
 	void Update(float dt);
 	void Draw(Graphics& gfx);
 	void DrawBig(Graphics& gfx);
+	void SpeedUp(float factor);
+	void ResetSpeed();
 	
 private:
 	Vec2 pos;
-	float vy = 2.0f * 60.0f;
+	float vy = 120.0f;
 	float size;
 };

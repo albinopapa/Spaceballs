@@ -20,19 +20,18 @@ public:
 	RectF GetCollisionRect() const;
 	int GetDmg() const;
 	void Reset();
+	void HandleCollision(int damage);
 
 private:
 	Vec2 pos;
-	static constexpr int radius = 90;
+	static constexpr float radius = 90.0f;
 	ShieldState sState = NoShield;
-	int shieldSize = 0;
-	int holeSize = - 5;
+	float shieldSize = 0.0f;
+	float holeSize = - 5.0f;
 	int meterWidth;
 	static constexpr int meterHeight = 10;
 	int meterX = 400;
 	int meterY = 570;
 	Color c = Colors::Blue;
-	int meterCounter = 0;
-	static constexpr int meterDecrease = 3;
 	static constexpr int dmg = 60;
 };

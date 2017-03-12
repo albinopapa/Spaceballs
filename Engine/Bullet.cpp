@@ -7,12 +7,29 @@ Bullet::Bullet(Vec2& pos_in)
 	bState(AliveState)
 {}
 
-//Update makes the bullet move in y direction and changes state to deadstate if it reaches the end of the screen
-void Bullet::Update(float dt)
-{
-	pos.y -= vy * dt;
+Bullet::Bullet(Vec2 & pos_in, Vec2& Vel, int Width, int Height, int bulletRectSize, int Dmg)
+	:
+	pos(pos_in),
+	halfWidth(Width),
+	halfHeight(Height),
+	vel(Vel),
+	dmg(Dmg),
+	bState(AliveState),
+	rectSize(bulletRectSize)
+{}
 
-	if (pos.y - bulletSize < 0)
+//Update makes the bullet move in y direction and changes state to deadstate if it reaches the end of the screen
+void Bullet::Update(float dt, Animation& bulletSprite)
+{
+	pos -= vel * dt;
+
+	bulletSprite.Advance(dt);
+	if (bulletSprite.AnimEnd())
+	{
+		bulletSprite.Reset();
+	}
+
+	if ((pos.y + (halfHeight * 2)) < 0 || pos.y >= Graphics::ScreenHeight)
 	{
 		bState = DeadState;
 	}
@@ -24,9 +41,9 @@ bool Bullet::HasSpawned() const
 	return bState == AliveState;
 }
 
-void Bullet::Draw(Graphics& gfx)
+void Bullet::Draw(Graphics& gfx, Animation& bulletSprite)
 {
-	gfx.DrawCircle(int(pos.x), int(pos.y), bulletSize, Colors::Magenta);
+	bulletSprite.Draw(int(pos.x), int(pos.y), gfx);
 }
 
 bool Bullet::IsActive() const
@@ -34,14 +51,11 @@ bool Bullet::IsActive() const
 	return bState == AliveState;
 }
 
-//returns RectF based on bullets position and size
 RectF Bullet::GetCollisionRect() const
 {
-	const float bSize = float(bulletSize);
-	return RectF(
-		Vec2(pos.x - bSize, pos.y - bSize),
-		(bSize * 2.0f),
-		(bSize * 2.0f));
+	Vec2 center = Vec2(pos.x + float(halfWidth), pos.y + float(halfHeight));
+	Vec2 rectPos = Vec2(center.x - float(rectSize), center.y - float(rectSize));
+	return RectF(rectPos, float(rectSize * 2), float(rectSize * 2));
 }
 
 void Bullet::HandleCollision()
@@ -52,6 +66,11 @@ void Bullet::HandleCollision()
 int Bullet::GetDamage()
 {
 	return dmg;
+}
+
+int Bullet::GetBossDmg()
+{
+	return bossDmg;
 }
 
 void Bullet::Reset()

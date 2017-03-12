@@ -2,98 +2,226 @@
 #include "Ship.h"
 #include "Surface.h"
 
-Ship::Ship(BulletManager& Manager, Surface& ShipSurface, Surface& exhaust, Surface& red, AnimationFrames& shiprekt, Surface& rektsurface)
+Ship::Ship(BulletManager& Manager, Surface& ShipSurface, 
+	Surface& red, AnimationFrames& shiprekt, AnimationFrames& holeAnim, 
+	AnimationFrames& holeRektAnim, AnimationFrames& shipexplo, AnimationFrames& exhaustAnim, 
+	AnimationFrames& rektExhaustAnim, Sound& shipexplodesound, Sound& blackholesound, AnimationFrames& bulletAnim)
 	:
 	bManager(Manager),
 	shipSurface(ShipSurface),
-	exhaustSurface(exhaust),
 	redSurface(red), 
-	shipRekt(shiprekt, 2),
-	rektSurface(rektsurface)
+	shipRekt(shiprekt, 2.0f),
+	blackHole(holeAnim, 1.0f),
+	blackHoleRekt(holeRektAnim, 1.0f),
+	shipExplo(shipexplo, 2.0f),
+	exhaust(exhaustAnim, 2.0f),
+	rektExhaust(rektExhaustAnim, 2.0f),
+	shipExplodeSound(shipexplodesound),
+	blackHoleSound(blackholesound),
+	bulletSprite(bulletAnim, 2.0f)
 {}
 
-void Ship::HandleCollision(int Damage)
+void Ship::HandleCollision(int Damage, float dt)
 {
-	health.Damage(Damage);
-	isHit = true;
+	switch (state)
+	{
+	case BlackHoleTransitionState:
+		if (health.GetHealthAmount() > lowHealth)
+		{
+			blackHole.Advance(dt);
+		}
+		else
+		{
+			blackHoleRekt.Advance(dt);
+		}
+
+		if ((blackHole.AnimEnd() || blackHoleRekt.AnimEnd()) && firstTransition)
+		{
+			blackHoleRekt.Reset();
+			blackHole.Reset();
+			oldX = pos.x;
+			oldY = pos.y;
+			pos.x = 350.0f;
+			pos.y = 500.0f;
+			state = BlackHoleState;
+			firstTransition = false;
+		}
+		else if (blackHole.AnimEnd() || blackHoleRekt.AnimEnd())
+		{
+			blackHoleRekt.Reset();
+			blackHole.Reset();
+			pos.x = oldX;
+			pos.y = oldY;
+			firstTransition = true;
+			state = TransitionBackState;
+		}
+		break;
+
+	case AliveState:
+		health.Damage(Damage);
+		isHit = true;
+		break;
+
+	case BlackHoleState:
+		health.Damage(Damage);
+		isHit = true;
+		break;
+	}	
 }
 
 void Ship::Draw(Graphics& gfx)
 {
-	if (health.HasHealth())
+	switch (state)
 	{
+	case AliveState:
 		if (health.GetHealthAmount() > lowHealth)
 		{
-			gfx.DrawSpriteKey(int(pos.x), int(pos.y), shipSurface, shipSurface.GetPixel(0, 0));
-
-			if (isMoving)
+			if (!isMoving)
 			{
-				gfx.DrawSpriteKey(int(pos.x), int(pos.y), exhaustSurface, exhaustSurface.GetPixel(0, 0));
+				gfx.DrawSpriteAlpha(int(pos.x), int(pos.y), shipSurface);
 			}
-
-			if (isHit)
+			
+			else
 			{
-				gfx.DrawSpriteKey(int(pos.x), int(pos.y), redSurface, redSurface.GetPixel(0, 0));
+				exhaust.Draw(int(pos.x), int(pos.y), gfx);
 			}
 		}
-		
+
 		else
 		{
-			shipRekt.Draw(int(pos.x), int(pos.y), gfx);
-			if (isMoving)
+			if (!isMoving)
 			{
-				gfx.DrawSpriteKey(int(pos.x), int(pos.y), rektSurface, rektSurface.GetPixel(0, 0));
+				shipRekt.Draw(int(pos.x), int(pos.y), gfx);
+			}
+
+			else
+			{
+				rektExhaust.Draw(int(pos.x), int(pos.y), gfx);
 			}
 		}
-		
-		health.Draw(gfx);
-		bManager.DrawBullets(gfx);
-	}
+
+		if (isHit)
+		{
+			gfx.DrawSpriteAlpha(int(pos.x), int(pos.y), redSurface);
+		}
+		bManager.DrawBullets(gfx, bulletSprite);
+		break;
+
+	case BlackHoleTransitionState:
+		if (health.GetHealthAmount() > lowHealth)
+		{
+			blackHole.Draw(int(pos.x), int(pos.y), gfx);
+		}
+
+		else
+		{
+			blackHoleRekt.Draw(int(pos.x), int(pos.y), gfx);
+		}
+		break;
+
+	case TransitionBackState:
+		if (health.GetHealthAmount() > lowHealth)
+		{
+			blackHole.Draw(int(pos.x), int(pos.y), gfx);
+		}
+
+		else
+		{
+			blackHoleRekt.Draw(int(pos.x), int(pos.y), gfx);
+		}
+		break;
+
+	case ExplodingState:
+		shipExplo.Draw(int(pos.x) - exploX, int(pos.y) - exploY, gfx);
+		bManager.DrawBullets(gfx, bulletSprite);
+		break;
+
+	case BlackHoleState:
+		if (health.GetHealthAmount() > lowHealth)
+		{
+			exhaust.Draw(int(pos.x), int(pos.y), gfx);
+		}
+
+		else
+		{
+			rektExhaust.Draw(int(pos.x), int(pos.y), gfx);
+		}
+
+		if (isHit)
+		{
+			gfx.DrawSpriteAlpha(int(pos.x), int(pos.y), redSurface);
+		}
+		break;
+	}	
+
+	health.Draw(gfx);
 }
 
 void Ship::ClampScreen()
 {
-	pos.x = std::max(0.f, std::min(pos.x, float(Graphics::ScreenWidth) - (width + 1.f)));
-	pos.y = std::max(0.f, std::min(pos.y, float(Graphics::ScreenHeight) - (height + 1.f)));
+	if (!gameComplete)
+	{
+		pos.x = std::max(0.f, std::min(pos.x, float(Graphics::ScreenWidth) - (width + 1.f)));
+		pos.y = std::max(0.f, std::min(pos.y, float(Graphics::ScreenHeight) - (height + 1.f)));
+	}
 }
 
 void Ship::PlayerInput(Keyboard& kbd, float dt)
 {
-	if (kbd.KeyIsPressed(VK_UP))
+	if (inputEnabled)
 	{
-		pos.y -= speed * dt;
-		isMoving = true;
-	}
+		if (state == AliveState)
+		{
+			if (kbd.KeyIsPressed(VK_UP))
+			{
+				pos.y -= speed * dt;
+				isMoving = true;
+			}
 
-	else if (kbd.KeyIsPressed(VK_DOWN))
-	{
-		pos.y += speed * dt;
-		isMoving = false;
-	}
+			else if (kbd.KeyIsPressed(VK_DOWN))
+			{
+				pos.y += speed * dt;
+				isMoving = false;
+			}
 
-	else
-	{
-		isMoving = false;
-	}
-	
-	if (kbd.KeyIsPressed(VK_LEFT))
-	{
-		pos.x -= speed * dt;
-	}
+			else
+			{
+				isMoving = false;
+			}
 
-	else if (kbd.KeyIsPressed(VK_RIGHT))
-	{
-		pos.x += speed * dt;
-	}
+			if (kbd.KeyIsPressed(VK_LEFT))
+			{
+				pos.x -= speed * dt;
+			}
 
-	if (kbd.KeyIsPressed(VK_SPACE))
-	{
-		bManager.FireBullet(Vec2(pos.x + canonX, pos.y + canonY), dt);
-	}
+			else if (kbd.KeyIsPressed(VK_RIGHT))
+			{
+				pos.x += speed * dt;
+			}
 
-	else
-	{
-		bManager.ResetShotsFired();
+			if (kbd.KeyIsPressed(VK_SPACE))
+			{
+				bManager.FireBullet(Vec2(pos.x + canonX, pos.y + canonY));
+			}
+
+			else
+			{
+				bManager.ResetShotsFired();
+			}
+		}
+
+		else if (state == BlackHoleState)
+		{
+			if (kbd.KeyIsPressed(VK_LEFT))
+			{
+				pos.x -= speed * dt;
+			}
+
+			else if (kbd.KeyIsPressed(VK_RIGHT))
+			{
+				pos.x += speed * dt;
+			}
+		}
 	}
 }
 
@@ -102,9 +230,29 @@ void Ship::Restore(int restore)
 	health.Restore(restore);
 }
 
-bool Ship::HasHealth() const
+bool Ship::IsAlive() const
 {
-	return health.HasHealth();
+	return state == AliveState;
+}
+
+bool Ship::IsDead() const
+{
+	return state == DeadState;
+}
+
+bool Ship::IsBlackHole() const
+{
+	return state == BlackHoleState;
+}
+
+bool Ship::ExitingBlackHole() const
+{
+	return state == TransitionBackState;
+}
+
+void Ship::EnableInput()
+{
+	inputEnabled = true;
 }
 
 RectF Ship::GetCollisionRect()
@@ -132,9 +280,19 @@ float Ship::GetHeight() const
 	return height;
 }
 
+int Ship::GetHealth() const
+{
+	return health.GetHealthAmount();
+}
+
 void Ship::SethitTarget(bool hit)
 {
 	hitTarget = hit;
+}
+
+void Ship::AddGravity(Vec2 & gravity, float dt)
+{
+	pos -= gravity * dt;
 }
 
 void Ship::SetY(float Y)
@@ -152,41 +310,189 @@ int Ship::GetDmg() const
 	return dmg;
 }
 
+void Ship::CollidesWithHole(bool collides)
+{
+	if (collides && (state == AliveState || state == BlackHoleState))
+	{
+		blackHoleSound.Play(0.8f, 1.0f);
+		state = BlackHoleTransitionState;
+	}	
+}
+
+void Ship::PrepareForBoss(float dt)
+{
+	inputEnabled = false;
+	const RectF rect = GetCollisionRect();
+	Vec2 resetPos = Vec2(400.0f, 500.0f);
+	Vec2 diff = rect.GetCenter() - resetPos;
+
+	if (diff.GetLengthSq() > 5.0f)
+	{
+		diff.Normalize();
+		diff *= 210.0f;
+		pos -= diff * dt;
+	}
+}
+
+float Ship::GetRight() const
+{
+	return pos.x + width;
+}
+
+float Ship::GetBottom() const
+{
+	return pos.y + height;
+}
+
+bool Ship::FlyOffScreen(float dt)
+{
+	gameComplete = true;
+	if ((pos.y + height) > -20.0f)
+	{
+		isMoving = true;
+		pos.y -= speed * dt;
+		return false;
+	}
+	else
+		return true;
+}
+
 void Ship::Reset()
 {
+	isMoving = false;
 	pos.x = 300.0f;
 	pos.y = 300.0f;
 	health.Reset();
 	isHit = false;
-	isMoving = false;
+	isHitCounter = 0.0f;
+	blackHole.Reset();
+	blackHoleRekt.Reset();
+	shipExplo.Reset();
+	state = AliveState;
+	gameComplete = false;
 }
 
 void Ship::Update(Keyboard & wnd, float dt)
 {
-	if (pos.y + 2 > Graphics::ScreenHeight)
+	switch (state)
 	{
-		health.Damage(health.GetHealthAmount());
-	}
-	if (HasHealth())
-	{
-		PlayerInput(wnd, dt);
-		ClampScreen();
-	}
-	if (isHit)
-	{
-		isHitCounter++;
-		if (isHitCounter >= 10)
+	case AliveState:
+		bManager.UpdateBullets(dt, bulletSprite);
+		if (int(pos.y) > (Graphics::ScreenHeight - 10))
 		{
-			isHitCounter = 0;
-			isHit = false;
+			health.Damage(health.GetHealthAmount());
 		}
-	}
-	if (health.GetHealthAmount() <= lowHealth)
-	{
-		shipRekt.Advance();
-		if (shipRekt.AnimEnd())
+
+		if (isHit)
 		{
-			shipRekt.Reset();
+			if ((isHitCounter += dt) >= hitOver)
+			{
+				isHitCounter = 0.0f;
+				isHit = false;
+			}
 		}
+
+		if (health.GetHealthAmount() <= lowHealth)
+		{
+			if (!isMoving)
+			{
+				shipRekt.Advance(dt);
+				if (shipRekt.AnimEnd())
+				{
+					shipRekt.Reset();
+				}
+			}
+			else
+			{
+				rektExhaust.Advance(dt);
+				if (rektExhaust.AnimEnd())
+				{
+					rektExhaust.Reset();
+				}
+			}
+		}
+
+		else if (isMoving)
+		{
+			exhaust.Advance(dt);
+			if (exhaust.AnimEnd())
+			{
+				exhaust.Reset();
+			}
+		}
+
+		if (!health.HasHealth())
+		{
+			shipExplodeSound.Play();
+			state = ExplodingState;
+		}
+		break;
+
+	case ExplodingState:
+		bManager.UpdateBullets(dt, bulletSprite);
+		shipExplo.Advance(dt);
+		if (shipExplo.AnimEnd())
+		{
+			state = DeadState;
+		}
+		break;
+
+	case BlackHoleState:
+		pos.y -= (speed / 30.0f) * dt;
+
+		if (isHit)
+		{
+			if ((isHitCounter += dt) >= hitOver)
+			{
+				isHitCounter = 0.0f;
+				isHit = false;
+			}
+		}
+
+		if (!health.HasHealth())
+		{
+			shipExplodeSound.Play();
+			state = ExplodingState;
+		}
+
+		else if (health.GetHealthAmount() <= lowHealth)
+		{
+			rektExhaust.Advance(dt);
+			if (rektExhaust.AnimEnd())
+			{
+				rektExhaust.Reset();
+			}
+		}
+
+		else if (health.GetHealthAmount() > lowHealth)
+		{
+			exhaust.Advance(dt);
+			if (exhaust.AnimEnd())
+			{
+				exhaust.Reset();
+			}
+		}
+		break;
+
+	case TransitionBackState:
+		if (health.GetHealthAmount() > lowHealth)
+		{
+			blackHole.Reverse(dt);
+		}
+		else
+		{
+			blackHoleRekt.Reverse(dt);
+		}
+
+		if (blackHole.AnimEnd() || blackHoleRekt.AnimEnd())
+		{
+			blackHoleRekt.Reset();
+			blackHole.Reset();
+			state = AliveState;
+		}
+		break; 
+
 	}
+	PlayerInput(wnd, dt);
+	ClampScreen();
 }

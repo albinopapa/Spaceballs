@@ -11,13 +11,19 @@ public:
 	void Reset();
 	void Update(float dt);
 	void Draw(Graphics& gfx);
-	void HandleCollision();
 	RectF GetCollisionRect() const;
+	bool GetIsActive() const;
+	void Deactivate();
+	void StopVy();
+	void StartVy();
 
 private:
 	Vec2 pos;
-	static constexpr float vy = 80.0f;
+	float vy = 80.0f;
+	static constexpr float resetVy = 80.0f;
 	static constexpr float width = 100.0f;
 	static constexpr float height = 100.0f;
+	static constexpr float range = 250.0f;
 	Animation bHoleSpin;
+	bool isActive = true;
 };

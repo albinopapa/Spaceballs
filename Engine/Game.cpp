@@ -31,22 +31,23 @@ Game::Game( MainWindow& wnd )
 void Game::Go()
 {
 	gfx.BeginFrame();	
-	UpdateModel();
+	float elapsedTime = ft.Mark();
+	while (elapsedTime > 0.0f)
+	{
+		const float dt = std::min(0.0025f, elapsedTime);
+		UpdateModel(dt);
+		elapsedTime -= dt;
+	}
+
 	ComposeFrame();
 	gfx.EndFrame();
 }
-/*
-I want to keep UpdateModel nice and neat. 
-Anything that has to do with the ship should be part of ship.Update
-*/
-void Game::UpdateModel()
+
+void Game::UpdateModel(float dt)
 {
-	const float dt = ft.Mark();
-	wnd.SetText( std::to_wstring( 1.f / dt ) + L"fps" );
 	world.Update(wnd.kbd, dt);
 }
 
-// same thing as in updatemodel goes for composeframe
 void Game::ComposeFrame()
 {
 	world.Draw(gfx);
