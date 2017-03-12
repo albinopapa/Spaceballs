@@ -42,7 +42,7 @@ Anything that has to do with the ship should be part of ship.Update
 void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
-	
+	wnd.SetText( std::to_wstring( 1.f / dt ) + L"fps" );
 	world.Update(wnd.kbd, dt);
 }
 

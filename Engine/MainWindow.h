@@ -63,6 +63,7 @@ public:
 	}
 	// returns false if quitting
 	bool ProcessMessage();
+	void SetText( const std::wstring &Title );
 	const std::wstring& GetArgs() const
 	{
 		return args;

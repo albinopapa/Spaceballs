@@ -99,6 +99,11 @@ bool MainWindow::ProcessMessage()
 	return true;
 }
 
+void MainWindow::SetText( const std::wstring & Title )
+{
+	SetWindowText( hWnd, Title.c_str() );
+}
+
 LRESULT WINAPI MainWindow::_HandleMsgSetup( HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam )
 {
 	// use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
